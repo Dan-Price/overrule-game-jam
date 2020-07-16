@@ -1,0 +1,384 @@
+<html>
+<head>
+    <style> 
+    body {
+    	background-color:black;
+    }
+    h1 , p, h3 {
+    	background-color:red;
+    	border-radius:1em;
+    	display:inline-block;
+    	padding-left:0.5em;
+    	padding-right:0.5em;
+    	
+    }
+    canvas {
+    background-color:grey;
+        } 
+    img {
+    	display:none;
+    }
+    
+    p {
+    	font-weight:bold;
+
+    }
+    b {
+    	background-color:black;
+    	color:red;
+    	border-radius:1em;
+    	padding-left:0.5em;
+    	padding-right:0.5em;
+    }
+    #instructions {
+    	margin: auto;
+    }
+
+    #footer p {
+      padding:0.2em;
+    }
+    </style> 
+
+</head> 
+<body>
+	<h1>Release the prisoners</h1>
+<div id='canvas'></div>
+<div id='footer'>
+<p><b id='showInstructions' onclick="instructions()">About </b>
+<b id='high score'>High score: </b>
+<b id='message' onclick='start()'>Play</b> 
+</p>
+</div>
+<div class='instructions' id='instructions' >
+<h1 >About</h1></br>
+<div id='instruction'>
+<p>Press the arrow keys to move to move the player around the game. Press the space bar to pause.</p></br>
+<p>Move to the odd cell out to help the prisoner escape to score points.</p></br>
+<p>The game ends when you touch a guard.</p></br> <p>Game sounds from soundimage.com</p> </br><p>Caught sound from games development facebook page. </p></div>
+
+<h3 onclick='menu()'>Menu</h3>
+</div>
+<img onload="count()" id='prisoncell' src="prisoncell.png">
+<img src="target.jpg" id='target' onload='count()'>
+<img id='criminal' onload="criminal()" src='criminal.jpg'>
+<img id='guard' onload='addGuard()' src='guard.jpg'>
+
+<audio class='over'> <source  src='caught.wav' type='audio/wav'></audio>
+<audio class='door'> <source  src='door.mp3' type='audio/mp3'></audio> 
+    </body>
+<script> 
+var font;
+if (!localStorage.highscore) {
+localStorage.highscore = 0;
+highscore = 0;
+} else {
+	highscore = localStorage.highscore;
+}
+document.querySelectorAll('b')[1].innerHTML+=highscore;
+var screenY = screen.height * 0.75;
+var screenX = screen.width;
+/*
+get size of the middled elements
+
+*/
+var tags = ['h1','h3','.instructions','b!0','b!1','b!2','h1!1'];
+
+for (i = 0; i < document.querySelectorAll('#instructions p').length; i++ ) {
+   tags.push("p!" + (i + 1) );
+} 
+
+var sizes = [];
+var  tag = [];
+var heights = [];
+for (i = 0; i < tags.length; i++) {
+  
+  tag = tags[i].split('!');
+  tag.push(0);
+  /*
+  variables element to get
+  number to get
+
+  retrieved element
+
+  get height and store in array
+
+  */ console.log(tag);
+ sizes[i] = document.querySelectorAll(tag[0])[Number(tag[1])].offsetWidth;
+ heights[i] = document.querySelectorAll(tag[0])[Number(tag[1])].offsetHeight;
+ 
+}
+
+document.querySelector('#instructions').style.display = "none";
+
+for (let i = 0; i < document.querySelectorAll('#instruction p').length; i++) {
+   document.querySelectorAll('#instruction p')[i].style.marginLeft = (screenX - sizes[tags.indexOf('p!' + (i + 1))]) / 2 + 'px';
+}
+var insSpacing = function () {
+let ins = ['h1', 'h1!1','h3', ...tags.filter(x=> x.includes('p!'))  ];
+let split = [];
+let totalHeight = 0;
+
+for (let i = 0; i < ins.length; i++ ) {
+  totalHeight+=heights[tags.indexOf(ins[i])];
+  console.log(totalHeight);
+} 
+  totalHeight = totalHeight + document.querySelector('h1').style.marginTop;
+let gaps = (document.body.offsetHeight - totalHeight) / ins.length; 
+
+for (let  i = 1; i < ins.length; i++) {
+  split = ins[i].split('!');
+  split.push(0);
+  document.querySelectorAll(split[0])[Number(split[1])].style.marginTop = gaps + 'px';
+}
+console.log(totalHeight);
+console.log(screen.height);
+
+}();
+
+document.querySelector('h1').style.marginLeft = (screenX - sizes[0]) / 2 + 'px';
+document.querySelectorAll('h1')[1].style.marginLeft = (screenX - sizes[tags.indexOf('h1!1')]) / 2 + 'px';
+document.querySelector('h3').style.marginLeft = (screenX - sizes[tags.indexOf('h3')]) / 2 + 'px';
+var menuX = screenX / 3;
+var marginMenu = (menuX - sizes[3] - sizes[4] - sizes[5]) / 2;
+for ( i =  1; i < document.querySelectorAll('b').length; i++) {
+   document.querySelectorAll('b')[i].style.marginLeft = marginMenu + 'px';
+}
+document.querySelector('#footer').style.marginLeft = screenX / 3 + 'px';
+var instructions = function () {
+  document.querySelector('#footer').style.display = 'none';
+  document.querySelector('#canvas').style.display = 'none';
+  document.querySelector('#instructions').style.display = 'block';
+}
+var menu = function () {
+	document.querySelector('#footer').style.display = 'block';
+  document.querySelector('#canvas').style.display = 'block';
+  document.querySelector('#instructions').style.display = 'none';
+}
+var score = 0;
+var person = function (x,y,xspeed,yspeed) {
+this.x = x;
+this.y = y;
+this.xspeed = xspeed;
+this.yspeed = yspeed;
+}
+var player;
+var guards = [];
+var coordinates = [[0,0],[1,0],[2,0],[4,0],[6,0],[7,0],[8,0],[9,0],[10,0],[11,0],[12,0],[13,0],
+[6,1],[6,2],[2,2],[2,3],[2,4],[0,3],[0,4],[0,5],[2,6],[4,4],[4,5],[4,6],[6,6],[8,2],[8,3],[8,4],[8,5],[9,5],[10,5],[9,2],[10,2],[11,2],[11,3],[13,2],[13,3],[13,5],
+[0,7],[1,7],[2,7],[4,7],[6,7],[7,7],[8,7],[9,7],[10,7],[11,7],[12,7],[13,7]
+];
+var prisoncell = document.querySelector("#prisoncell");
+var target = document.querySelector("#target");
+var criminalimg = document.querySelector("#criminal");
+var guard = document.querySelector("#guard");
+
+
+
+
+document.querySelector('#canvas').innerHTML = "<canvas width='" + screenX + "px' height='" + screenY + "px'></canvas>"
+var canv = document.querySelector("canvas").getContext('2d');
+canv.strokeStyle = "Red";
+canv.font = "40px sarif";
+//same width same height
+var cellWidth = screenX / 14;
+var cellHeight = screenY / 8;
+/*for (i = 0; i < 14; i++) {
+canv.moveTo(i * cellWidth,0);
+canv.lineTo(i * cellWidth,screenY);
+canv.stroke();
+}
+for (i = 0; i < 8; i++) {
+canv.moveTo(0,i * cellHeight);
+canv.lineTo(screenX,i * cellHeight);
+}*/
+var counti = 0;
+var count = function () {
+counti++;
+if (counti === 2) {
+cell();
+}
+}
+var x = Math.floor(Math.random() * coordinates.length);
+
+var cell = function () {
+ var img;
+for (i = 0; i < coordinates.length; i++) {
+   img = (i === x) ? target : prisoncell
+   canv.drawImage(img,coordinates[i][0] * cellWidth,coordinates[i][1] * cellHeight,cellWidth,cellHeight);
+   canv.stroke();
+}
+}
+var criminal = function () {
+ player = new person(cellWidth,cellHeight,cellWidth / 25 * 0 ,cellWidth / 25 * 0); 
+ canv.drawImage(criminalimg, 0,cellHeight, cellWidth / 3, cellWidth / 3);
+ canv.stroke();
+}
+var addGuard = function () {
+ var speedX = Math.floor(Math.random() * cellWidth / 15 ) + cellWidth / 40 ;
+ var speedY = Math.floor(Math.random() * cellWidth / 15 ) + cellWidth / 40 ;
+ guards.push(new person(Math.floor(Math.random() * screenX ),Math.floor(Math.random() * screenY ),speedX,speedY));
+ canv.drawImage(guard, guards[guards.length - 1].x,guards[guards.length - 1].y, cellWidth / 3, cellWidth / 3);
+
+ canv.stroke();
+}
+var drawGuards = function () {
+  for (i = 0; i < guards.length; i++) {
+    canv.drawImage(guard,guards[i].x,guards[i].y,cellWidth / 3, cellWidth / 3);
+    guards[i].x += guards[i].xspeed;
+    guards[i].y += guards[i].yspeed; 
+    canv.stroke();
+    if (guards[i].y < 0 || guards[i].y + cellWidth / 3 > screenY) {
+       guards[i].yspeed = -guards[i].yspeed;
+    }
+    if (guards[i].x < 0 || guards[i].x + cellWidth / 3 > screenX) {
+       guards[i].xspeed = -guards[i].xspeed;
+    }
+  }
+}
+var wh = cellWidth / 3;
+var drawCriminal = function () {
+	var teleported = 0;
+  canv.drawImage(criminalimg,player.x, player.y, cellWidth / 3, cellWidth / 3);
+  player.x += player.xspeed;
+  player.y += player.yspeed;
+  canv.stroke();
+  if (player.x < 0) {
+    player.x = screenX;
+  } else if (player.y < 0) {
+    player.y = screenY
+  } else if (player.x > screenX) {
+    player.x = 0;
+  } else if (player.y > screenY) {
+    player.y = 0;
+  }  
+  if (player.x < 0 || player.y < 0 || player.x > screenX || player.y > screenY ) {
+  	teleported = 1;
+  }//collision area too big
+   for (i = 0; i < coordinates.length; i++) {
+   //collision of 
+   if (player.x + wh > coordinates[i][0] * cellWidth && player.x  < cellWidth + cellWidth * coordinates[i][0] && player.y + wh > coordinates[i][1] * cellHeight && player.y < cellHeight + cellHeight * coordinates[i][1] ) {
+   	    /*if (teleported === 1) {
+   	    	if ( player.x === 0 || player.y === screenX) {
+   	        player.x = screenX - player.x;
+   	        } else {
+   	        player.y = screemY - player.y 
+   	        }*/
+   	    
+   	    player.x -= player.xspeed;
+     	player.y -= player.yspeed;
+     	player.xspeed = 0;
+     	player.yspeed = 0;
+     	if ( i === x) {
+           addGuard();
+           document.querySelector('audio[class="door"]').play();
+           score++;
+           do {
+            x = Math.floor(Math.random() * coordinates.length);
+           } while ( x === 15); 
+          
+     	}
+   } }
+  
+}
+var update = function () {
+ if (score > highscore) {
+   document.querySelectorAll('b')[2].innerHTML = "High score: " + highscore;
+ }
+ canv.lineWidth = 1;
+ canv.clearRect(0,0,screenX,screenY);
+  for ( i = 0 ; i < guards.length; i++ ) {
+     if ( player.x < guards[i].x + wh && player.x + wh > guards[i].x && player.y < wh + guards[i].y && player.y + wh > guards[i].y  )  {
+     	gameOver();
+     } }
+ cell();
+ drawCriminal();
+ drawGuards();
+ canv.strokeText("Score:" + score,0, cellHeight * 0.9);
+ canv.stroke();
+}
+var paused = false;
+var pause = function() {
+  if (paused === false && document.querySelector('#message').innerHTML !== 'Pause') {
+    start();
+    return;
+  }
+  font = canv.font;
+  if (!paused) {
+  clearInterval(interval);
+  canv.lineWidth = screenX / 100;
+  canv.font = screenY / 1.35 + "px Seref";
+  canv.strokeText("Paused",0,screenY  / 1.5);
+  document.querySelector('#message').innerHTML = 'Play';
+  canv.fillStyle = 'red';
+  canv.font = font;
+  canv.fillText("Press space to restart",screenX / 3,screenY / 1.3);
+  canv.stroke();
+  paused = true;
+    } else {
+      interval = setInterval(update,50);
+      paused = false;
+      document.querySelector('#message').innerHTML = 'Pause';
+    }
+}
+
+var interval;
+var start = function () {
+ document.querySelector('#message').innerHTML = 'Pause';
+ document.querySelector('#message').onclick = function () {
+  pause();
+}
+ document.querySelector('h1').style.display = "none";
+ interval = setInterval(update,50);
+}
+var gameOver = function () {
+  document.querySelector('audio[class="over"]').play();
+clearInterval(interval);
+if (score > highscore) {
+  highscore = score;
+  if (localStorage.highscore) {
+    localStorage.highscore = highscore;
+  }
+  
+}
+document.querySelector("#canvas").innerHTML = "<h1> Game Over</h1></br><p style='padding:0.2em'>Your score:<b>" + score + "</b></br></p> ";
+   document.querySelector('#message').style.display = 'inline';
+   document.querySelector('#message').onclick = function () {
+   	location.reload();
+   }
+   document.querySelector('#message').innerHTML = 'Play again';
+   var sizes = [];
+   var x;
+   for (i = 0; i < document.querySelectorAll('#canvas *').length; i++) {
+     x = document.querySelectorAll('#canvas *')[i];
+     sizes[i] = parseFloat(window.getComputedStyle(x).getPropertyValue('width'));
+   }
+   for (i = 0; i < document.querySelectorAll('#canvas *').length; i++) {
+     document.querySelectorAll('#canvas *')[i].style.marginLeft = (screenX - sizes[i]) / 2 + 'px' ;
+   }
+   document.querySelectorAll('b')[2].innerHTML = "High score: " + highscore;
+}
+
+var newSpeed = function (e) {
+e.preventDefault();
+ switch(e.keyCode) {
+    case 38: //up
+       player.yspeed-=(cellWidth / 25)
+    break;
+    case 40: //down
+       player.yspeed+=(cellWidth / 25)
+    break;
+    case 39: //right
+       player.xspeed+=(cellWidth / 25)
+    break;
+    case 37: //left
+       player.xspeed-=(cellWidth / 25)
+    break;
+    case 32:
+       pause();
+    break
+  }
+}
+window.addEventListener("keydown", newSpeed , false);
+
+</script>
+</html>
