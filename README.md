@@ -1,4 +1,4 @@
-My entry for the overrule game jam in summer 2017 in games development society.
+My entry for the overrule game jam in summer 2018 in games development society.
 A tutorial can be found in the game by pressing about. 
 
 Lots of changes have been made to the game since the gamejam.
