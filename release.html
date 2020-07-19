@@ -54,7 +54,8 @@
 <div id='instruction'>
 <p>Press the arrow keys to move to move the player around the game. Press the space bar to pause.</p></br>
 <p>Move to the odd cell out to help the prisoner escape to score points.</p></br>
-<p>The game ends when you touch a guard.</p></br> <p>Game sounds from soundimage.com</p> </br><p>Caught sound from games development facebook page. </p></div>
+<p>Press space to pause</p></br>
+<p>The game ends when you touch a guard.</p></br> <p>Door and background sounds from soundimage.org</p> </br><p>Caught sound from games development facebook page. </p></div>
 
 <h3 onclick='menu()'>Menu</h3>
 </div>
@@ -65,6 +66,7 @@
 
 <audio class='over'> <source  src='caught.wav' type='audio/wav'></audio>
 <audio class='door'> <source  src='door.mp3' type='audio/mp3'></audio> 
+<audio class='background'> <source  src='background.mp3' type='audio/mp3'></audio> 
     </body>
 <script> 
 var font;
@@ -182,15 +184,7 @@ canv.font = "40px sarif";
 //same width same height
 var cellWidth = screenX / 14;
 var cellHeight = screenY / 8;
-/*for (i = 0; i < 14; i++) {
-canv.moveTo(i * cellWidth,0);
-canv.lineTo(i * cellWidth,screenY);
-canv.stroke();
-}
-for (i = 0; i < 8; i++) {
-canv.moveTo(0,i * cellHeight);
-canv.lineTo(screenX,i * cellHeight);
-}*/
+
 var counti = 0;
 var count = function () {
 counti++;
@@ -257,12 +251,7 @@ var drawCriminal = function () {
    for (i = 0; i < coordinates.length; i++) {
    //collision of 
    if (player.x + wh > coordinates[i][0] * cellWidth && player.x  < cellWidth + cellWidth * coordinates[i][0] && player.y + wh > coordinates[i][1] * cellHeight && player.y < cellHeight + cellHeight * coordinates[i][1] ) {
-   	    /*if (teleported === 1) {
-   	    	if ( player.x === 0 || player.y === screenX) {
-   	        player.x = screenX - player.x;
-   	        } else {
-   	        player.y = screemY - player.y 
-   	        }*/
+   	    
    	    
    	    player.x -= player.xspeed;
      	player.y -= player.yspeed;
@@ -323,21 +312,28 @@ var pause = function() {
 
 var interval;
 var start = function () {
- document.querySelector('#message').innerHTML = 'Pause';
- document.querySelector('#message').onclick = function () {
-  pause();
-}
- document.querySelector('h1').style.display = "none";
- interval = setInterval(update,50);
-}
-var gameOver = function () {
-  document.querySelector('audio[class="over"]').play();
-clearInterval(interval);
-if (score > highscore) {
-  highscore = score;
-  if (localStorage.highscore) {
-    localStorage.highscore = highscore;
+
+  let background = document.querySelector('.background');
+  background.play();
+  background.onended = function() {
+  background.play()
+  };
+  document.querySelector('#message').innerHTML = 'Pause';
+  document.querySelector('#message').onclick = function () {
+    pause();
   }
+  document.querySelector('h1').style.display = "none";
+  interval = setInterval(update,50);
+}
+
+var gameOver = function () {
+   document.querySelector('audio[class="over"]').play();
+ clearInterval(interval);
+ if (score > highscore) {
+   highscore = score;
+   if (localStorage.highscore) {
+      localStorage.highscore = highscore;
+   }
   
 }
 document.querySelector("#canvas").innerHTML = "<h1> Game Over</h1></br><p style='padding:0.2em'>Your score:<b>" + score + "</b></br></p> ";
