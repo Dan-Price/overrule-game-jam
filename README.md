@@ -1,3 +1,3 @@
-My entry for the overule game jam in summer 2017 in games development society
+My entry for the overrule game jam in summer 2017 in games development society
 Lots of changes have been made to the game since the gamejam.
 Uses sounds by Eric Matyas from soundimage.org
