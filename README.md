@@ -7,10 +7,10 @@ Uses sounds by Eric Matyas from soundimage.org.
 
 Uses images from
 
-1] https://favpng.com/png_view/crime-criminal-law-clip-art-png/UMmtYPK4 
+1] https://www.pexels.com/photo/man-in-orange-button-up-shirt-standing-beside-man-in-black-button-up-shirt-6065242/
 
-2] https://www.pinterest.co.uk/pin/319051954833027071/
+2] https://unsplash.com/photos/QjCq7do_B14
 
-3] https://cutewallpaper.org/down.php?file=/21/jail-backgrounds/Amazon.com-Prison-Cell-Bars-Photography-Backdrop-7x5FT-.jpg
+3] https://unsplash.com/photos/PPWXd6bvRoM
 
-4] https://itsgoingdown.org/under-lock-and-key-i-was-thrown-in-solitary-and-punished-for-following-the-wardens-orders/
+4] https://unsplash.com/photos/3zfTVVStzgs
