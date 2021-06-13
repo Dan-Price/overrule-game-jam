@@ -18,3 +18,6 @@ Uses images from
 3] https://unsplash.com/photos/PPWXd6bvRoM
 
 4] https://unsplash.com/photos/3zfTVVStzgs
+
+By Daniel Price, coded using self taight HTML, CSS and Javascript.
+The CSS and Javascript have all been embedded inside the HTML file.
