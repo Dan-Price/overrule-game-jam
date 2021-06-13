@@ -3,7 +3,7 @@ This game is about overruling the security in a prison.
 A tutorial can be found in the game by pressing about. 
 
 Lots of changes have been made to the game since the gamejam.
-Uses sounds by Eric Matyas from soundimage.org.
+Uses sounds by Eric Matyas from soundimage.org and a sound provided by the games development society.
 
 Uses images from
 
