@@ -31,7 +31,8 @@
     	padding-right:0.5em;
     }
     #instructions {
-    	margin: auto;
+    	margin: 0px;
+
     }
 
     #footer p {
@@ -59,7 +60,7 @@
 
 <h3 onclick='menu()'>Menu</h3>
 </div>
-<img onload="count()" id='prisoncell' src="prisoncell.png">
+<img onload="count()" id='prisoncell' src="prisoncell.jpg">
 <img src="target.jpg" id='target' onload='count()'>
 <img id='criminal' onload="criminal()" src='criminal.jpg'>
 <img id='guard' onload='addGuard()' src='guard.jpg'>
@@ -77,8 +78,8 @@ highscore = 0;
 	highscore = localStorage.highscore;
 }
 document.querySelectorAll('b')[1].innerHTML+=highscore;
-var screenY = screen.height * 0.75;
-var screenX = screen.width;
+var screenY = window.innerHeight * 0.75;
+var screenX = window.innerWidth;
 /*
 get size of the middled elements
 
@@ -90,7 +91,7 @@ for (i = 0; i < document.querySelectorAll('#instructions p').length; i++ ) {
 } 
 
 var sizes = [];
-var  tag = [];
+var tag = [];
 var heights = [];
 for (i = 0; i < tags.length; i++) {
   
@@ -105,36 +106,36 @@ for (i = 0; i < tags.length; i++) {
   get height and store in array
 
   */ console.log(tag);
- sizes[i] = document.querySelectorAll(tag[0])[Number(tag[1])].offsetWidth;
+ sizes[i] = document.querySelectorAll(tag[0])[Number(tag[1])].offsetWidth; 
  heights[i] = document.querySelectorAll(tag[0])[Number(tag[1])].offsetHeight;
- 
+ //heights of the elements referenced by tags array
 }
 
 document.querySelector('#instructions').style.display = "none";
 
 for (let i = 0; i < document.querySelectorAll('#instruction p').length; i++) {
-   document.querySelectorAll('#instruction p')[i].style.marginLeft = (screenX - sizes[tags.indexOf('p!' + (i + 1))]) / 2 + 'px';
+  document.querySelectorAll('#instruction p')[i].style.marginLeft = (screenX - sizes[tags.indexOf('p!' + (i + 1))]) / 2 + 'px'; //place element in the middle of the page
 }
-var insSpacing = function () {
-let ins = ['h1', 'h1!1','h3', ...tags.filter(x=> x.includes('p!'))  ];
-let split = [];
-let totalHeight = 0;
 
-for (let i = 0; i < ins.length; i++ ) {
-  totalHeight+=heights[tags.indexOf(ins[i])];
-  console.log(totalHeight);
-} 
-  totalHeight = totalHeight + document.querySelector('h1').style.marginTop;
-let gaps = (document.body.offsetHeight - totalHeight) / ins.length; 
+var insSpacing = function () { //controls the positions of the elements in the instructions bar 
+   let ins = ['h1', 'h1!1','h3', ...tags.filter(x=> x.includes('p!'))  ];
+   let split = [];
+   let totalHeight = 0;
 
-for (let  i = 1; i < ins.length; i++) {
-  split = ins[i].split('!');
-  split.push(0);
-  document.querySelectorAll(split[0])[Number(split[1])].style.marginTop = gaps + 'px';
-}
-console.log(totalHeight);
-console.log(screen.height);
+   for (let i = 0; i < ins.length; i++ ) {
+     totalHeight+=heights[tags.indexOf(ins[i])];
+     console.log(totalHeight);
+   } 
 
+   let gaps = (screen.availHeight - totalHeight) / ins.length; 
+   console.log(gaps)
+   for (let  i = 1; i < ins.length; i++) {
+     split = ins[i].split('!');
+     split.push(0);
+     document.querySelectorAll(split[0])[Number(split[1])].style.marginTop = gaps + 'px';
+   }
+   console.log(totalHeight);
+   console.log(screen.height);
 }();
 
 document.querySelector('h1').style.marginLeft = (screenX - sizes[0]) / 2 + 'px';
@@ -146,6 +147,7 @@ for ( i =  1; i < document.querySelectorAll('b').length; i++) {
    document.querySelectorAll('b')[i].style.marginLeft = marginMenu + 'px';
 }
 document.querySelector('#footer').style.marginLeft = screenX / 3 + 'px';
+
 var instructions = function () {
   document.querySelector('#footer').style.display = 'none';
   document.querySelector('#canvas').style.display = 'none';
@@ -158,10 +160,10 @@ var menu = function () {
 }
 var score = 0;
 var person = function (x,y,xspeed,yspeed) {
-this.x = x;
-this.y = y;
-this.xspeed = xspeed;
-this.yspeed = yspeed;
+   this.x = x;
+   this.y = y;
+   this.xspeed = xspeed;
+   this.yspeed = yspeed;
 }
 var player;
 var guards = [];
@@ -248,15 +250,15 @@ var drawCriminal = function () {
   if (player.x < 0 || player.y < 0 || player.x > screenX || player.y > screenY ) {
   	teleported = 1;
   }//collision area too big
-   for (i = 0; i < coordinates.length; i++) {
+   for (let i = 0; i < coordinates.length; i++) {
    //collision of 
    if (player.x + wh > coordinates[i][0] * cellWidth && player.x  < cellWidth + cellWidth * coordinates[i][0] && player.y + wh > coordinates[i][1] * cellHeight && player.y < cellHeight + cellHeight * coordinates[i][1] ) {
    	    
    	    
-   	    player.x -= player.xspeed;
+   	  player.x -= player.xspeed;
      	player.y -= player.yspeed;
-     	player.xspeed = 0;
-     	player.yspeed = 0;
+     	player.xspeed = -player.xspeed;
+     	player.yspeed = -player.yspeed;
      	if ( i === x) {
            addGuard();
            document.querySelector('audio[class="door"]').play();
@@ -335,8 +337,8 @@ var gameOver = function () {
       localStorage.highscore = highscore;
    }
   
-}
-document.querySelector("#canvas").innerHTML = "<h1> Game Over</h1></br><p style='padding:0.2em'>Your score:<b>" + score + "</b></br></p> ";
+ }
+ document.querySelector("#canvas").innerHTML = "<h1> Game Over</h1></br><p style='padding:0.2em'>Your score:<b>" + score + "</b></br></p> ";
    document.querySelector('#message').style.display = 'inline';
    document.querySelector('#message').onclick = function () {
    	location.reload();
@@ -354,25 +356,68 @@ document.querySelector("#canvas").innerHTML = "<h1> Game Over</h1></br><p style=
    document.querySelectorAll('b')[2].innerHTML = "High score: " + highscore;
 }
 
-var newSpeed = function (e) {
+
+
+
+var newSpeed = function (e) { 
+  var sign = function (variable) { 
+    //returns 1 if positive and -1 if negative
+    if ( variable == 0) {
+    return 0
+    }
+  	return variable / Math.abs(variable)
+  }
+  var changeSpeed = function (coord, updown) { //updown is 1 for downwards and -1 for upwards
+    if ( Math.abs( player[coord]) < 1e-10 ) { 
+    //errors in the JS calculator give values of 2e-16 that should be zero
+	  player[coord]+=(cellWidth / 25 * updown) 
+    }
+    else {
+	  player[coord] = player[coord] * updown > 0 ? player[coord] : -1 * player[coord]
+    }
+  }
 e.preventDefault();
  switch(e.keyCode) {
     case 38: //up
-       player.yspeed-=(cellWidth / 25)
+       changeSpeed('yspeed',-1)
     break;
     case 40: //down
-       player.yspeed+=(cellWidth / 25)
+       changeSpeed('yspeed',1)
     break;
     case 39: //right
-       player.xspeed+=(cellWidth / 25)
+       changeSpeed('xspeed',1)
     break;
     case 37: //left
-       player.xspeed-=(cellWidth / 25)
+       changeSpeed('xspeed',-1)
     break;
     case 32:
        pause();
+    break;
+    case 87: //w increase yspeed
+       console.log( sign(player.xspeed) )
+       player.yspeed = (Math.abs(player.yspeed ) + cellWidth / 25) * sign(player.yspeed)
+
+       //player.yspeed+=(cellWidth / 25 * sign(player.xspeed) )
+    break;
+    case 83: //s decrease yspeed
+       //player.yspeed-=(cellWidth / 25 * sign(player.xspeed) )
+       player.yspeed = (Math.abs(player.yspeed ) - cellWidth / 25) * sign(player.yspeed)
+    break;
+    case 65: //a decrease xspeed
+       //player.xspeed-=(cellWidth / 25 * sign(player.yspeed) )
+       player.xspeed = (Math.abs(player.xspeed ) - cellWidth / 25) * sign(player.xspeed)
+    break;
+    case 68: //d increase xspeed
+       //player.xspeed+=(cellWidth / 25 * sign(player.yspeed) )
+       player.xspeed = (Math.abs(player.xspeed ) +  cellWidth / 25) * sign(player.xspeed)
     break
+    
+
+
+
   }
+  console.log('yspeed' + player.yspeed)
+  console.log('xspeed' + player.xspeed)
 }
 window.addEventListener("keydown", newSpeed , false);
 
