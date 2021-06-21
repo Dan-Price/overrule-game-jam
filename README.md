@@ -1,6 +1,10 @@
-My entry for the overrule game jam in summer 2018 in games development society.
+My entry for the overrule game jam in games development society.
 This game is about overruling the security in a prison.
-A tutorial can be found in the game by pressing about. 
+The aim is to free as many prisoners as possible before you are caught.
+
+Press the arrow keys to change direction
+Press the asdw keys to accelerate or deaccelerate
+
 
 Lots of changes have been made to the game since the gamejam.
 Uses sounds by Eric Matyas from soundimage.org and a sound provided by the games development society.
@@ -14,3 +18,6 @@ Uses images from
 3] https://unsplash.com/photos/PPWXd6bvRoM
 
 4] https://unsplash.com/photos/3zfTVVStzgs
+
+By Daniel Price, coded using self taight HTML, CSS and Javascript.
+The CSS and Javascript have all been embedded inside the HTML file.
