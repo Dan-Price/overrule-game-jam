@@ -55,8 +55,9 @@
 <div id='instruction'>
 <p>Press the arrow keys to move to move the player around the game. Press the space bar to pause.</p></br>
 <p>Move to the odd cell out to help the prisoner escape to score points.</p></br>
-<p>Press space to pause</p></br>
-<p>The game ends when you touch a guard.</p></br> <p>Door and background sounds from soundimage.org</p> </br><p>Caught sound from games development facebook page. </p></div>
+<p>Press the wasd keys to accelerate and deaccelerate</p></br>
+<p>The game ends when you touch a guard.</p></br> <p>Door and background sounds from soundimage.org</p> </br><p>Caught sound provided by games development society.</p> </br>
+<p>Uses images from pexels.com and unsplash.com</p></div>
 
 <h3 onclick='menu()'>Menu</h3>
 </div>
@@ -79,12 +80,12 @@ highscore = 0;
 }
 document.querySelectorAll('b')[1].innerHTML+=highscore;
 var screenY = window.innerHeight * 0.75;
-var screenX = window.innerWidth;
+var screenX = window.innerWidth; //variable used to adjust the size of the game to fit the screen
 /*
-get size of the middled elements
+get size of the elements, needed to place them in the middle of the page using their margin-Left values
 
 */
-var tags = ['h1','h3','.instructions','b!0','b!1','b!2','h1!1'];
+var tags = ['h1!0','h3!0','.instructions','b!0','b!1','b!2','h1!1'];
 
 for (i = 0; i < document.querySelectorAll('#instructions p').length; i++ ) {
    tags.push("p!" + (i + 1) );
@@ -105,7 +106,7 @@ for (i = 0; i < tags.length; i++) {
 
   get height and store in array
 
-  */ console.log(tag);
+  */ 
  sizes[i] = document.querySelectorAll(tag[0])[Number(tag[1])].offsetWidth; 
  heights[i] = document.querySelectorAll(tag[0])[Number(tag[1])].offsetHeight;
  //heights of the elements referenced by tags array
@@ -118,16 +119,17 @@ for (let i = 0; i < document.querySelectorAll('#instruction p').length; i++) {
 }
 
 var insSpacing = function () { //controls the positions of the elements in the instructions bar 
-   let ins = ['h1', 'h1!1','h3', ...tags.filter(x=> x.includes('p!'))  ];
+   let ins = ['h1!0', 'h1!1','h3!0', ...tags.filter(x=> x.includes('p!'))  ];
    let split = [];
    let totalHeight = 0;
 
    for (let i = 0; i < ins.length; i++ ) {
-     totalHeight+=heights[tags.indexOf(ins[i])];
-     console.log(totalHeight);
-   } 
-
-   let gaps = (screen.availHeight - totalHeight) / ins.length; 
+     console.log(totalHeight)
+     console.log(ins[i] )
+     totalHeight+=heights[tags.indexOf(ins[i])]; 
+   } //get the total height of all the elements that appear in the about screen
+   console.log(totalHeight)
+   let gaps = (screenY - totalHeight) / ins.length; 
    console.log(gaps)
    for (let  i = 1; i < ins.length; i++) {
      split = ins[i].split('!');
@@ -140,7 +142,7 @@ var insSpacing = function () { //controls the positions of the elements in the i
 
 document.querySelector('h1').style.marginLeft = (screenX - sizes[0]) / 2 + 'px';
 document.querySelectorAll('h1')[1].style.marginLeft = (screenX - sizes[tags.indexOf('h1!1')]) / 2 + 'px';
-document.querySelector('h3').style.marginLeft = (screenX - sizes[tags.indexOf('h3')]) / 2 + 'px';
+document.querySelector('h3').style.marginLeft = (screenX - sizes[tags.indexOf('h3!0')]) / 2 + 'px';
 var menuX = screenX / 3;
 var marginMenu = (menuX - sizes[3] - sizes[4] - sizes[5]) / 2;
 for ( i =  1; i < document.querySelectorAll('b').length; i++) {
@@ -189,26 +191,27 @@ var cellHeight = screenY / 8;
 
 var counti = 0;
 var count = function () {
-counti++;
-if (counti === 2) {
-cell();
-}
+   counti++;
+   if (counti === 2) {
+      cell();
+   }
 }
 var x = Math.floor(Math.random() * coordinates.length);
 
 var cell = function () {
- var img;
-for (i = 0; i < coordinates.length; i++) {
+  var img;
+  for (i = 0; i < coordinates.length; i++) {
    img = (i === x) ? target : prisoncell
    canv.drawImage(img,coordinates[i][0] * cellWidth,coordinates[i][1] * cellHeight,cellWidth,cellHeight);
    canv.stroke();
-}
+  }
 }
 var criminal = function () {
  player = new person(cellWidth,cellHeight,cellWidth / 25 * 0 ,cellWidth / 25 * 0); 
  canv.drawImage(criminalimg, 0,cellHeight, cellWidth / 3, cellWidth / 3);
  canv.stroke();
 }
+
 var addGuard = function () {
  var speedX = Math.floor(Math.random() * cellWidth / 15 ) + cellWidth / 40 ;
  var speedY = Math.floor(Math.random() * cellWidth / 15 ) + cellWidth / 40 ;
@@ -217,6 +220,35 @@ var addGuard = function () {
 
  canv.stroke();
 }
+
+var playerxpath = function (x0,y0,dx,dy,y) {
+  return (dx * (y - y0)/dy + x0 )
+}
+
+var playerypath = function (x0, y0, dx, dy, x) {
+  return  y0 + dy * (x - x0)/dx
+}
+
+var pythagorous = function(coord1, coord2 ) {
+  let x2 = Math.pow( coord1[0] - coord2[0], 2) 
+  let y2 = Math.pow( coord1[1] - coord2[1], 2)
+  return Math.sqrt(x2 + y2)
+}
+
+var within = function (start, end, test) { //check for a midpoint to confirm the player has passed through these points
+  xAsc = [start[0], end[0], test[0] ].sort()
+  yAsc = [start[1], end[1], test[1] ].sort() 
+  if (xAsc[1] === test[0] && yAsc[1] === test[1] ) {
+    return true
+  } else {
+    return false
+  }
+  
+}
+
+
+PCollPoints = []
+
 var drawGuards = function () {
   for (i = 0; i < guards.length; i++) {
     canv.drawImage(guard,guards[i].x,guards[i].y,cellWidth / 3, cellWidth / 3);
@@ -231,14 +263,17 @@ var drawGuards = function () {
     }
   }
 }
+
+
 var wh = cellWidth / 3;
 var drawCriminal = function () {
 	var teleported = 0;
-  canv.drawImage(criminalimg,player.x, player.y, cellWidth / 3, cellWidth / 3);
+  var CrimSize = cellWidth / 3
+  canv.drawImage(criminalimg,player.x, player.y, CrimSize, CrimSize);
   player.x += player.xspeed;
   player.y += player.yspeed;
   canv.stroke();
-  if (player.x < 0) {
+  if (player.x < 0) { //detect the player moving off the screen
     player.x = screenX;
   } else if (player.y < 0) {
     player.y = screenY
@@ -249,44 +284,89 @@ var drawCriminal = function () {
   }  
   if (player.x < 0 || player.y < 0 || player.x > screenX || player.y > screenY ) {
   	teleported = 1;
-  }//collision area too big
-   for (let i = 0; i < coordinates.length; i++) {
-   //collision of 
-   if (player.x + wh > coordinates[i][0] * cellWidth && player.x  < cellWidth + cellWidth * coordinates[i][0] && player.y + wh > coordinates[i][1] * cellHeight && player.y < cellHeight + cellHeight * coordinates[i][1] ) {
-   	    
-   	    
+  }
+    for (let i = 0; i < coordinates.length; i++) {
+     
+    if (player.x + CrimSize > coordinates[i][0] * cellWidth && player.x  < cellWidth + cellWidth * coordinates[i][0] && player.y + CrimSize > coordinates[i][1] * cellHeight && player.y < cellHeight + cellHeight * coordinates[i][1] ) {
+   	     
    	  player.x -= player.xspeed;
      	player.y -= player.yspeed;
-     	player.xspeed = -player.xspeed;
-     	player.yspeed = -player.yspeed;
-     	if ( i === x) {
+      console.log(player)
+      player0 = player
+      colx = playerxpath(player.x, player.y, player.xspeed, player.yspeed, cellHeight * coordinates[i][1] - CrimSize )
+      PCollPoints.push( [ colx, cellHeight * coordinates[i][1] - CrimSize ] )
+
+      colx = playerxpath(player.x, player.y, player.xspeed, player.yspeed, cellHeight + cellHeight * coordinates[i][1])
+      PCollPoints.push( [ colx, cellHeight + cellHeight * coordinates[i][1] ] )
+
+      coly = playerypath(player.x, player.y, player.xspeed, player.yspeed, cellWidth * coordinates[i][0] - CrimSize)
+      PCollPoints.push( [ cellWidth * coordinates[i][0] - CrimSize, coly ] )
+
+      coly = playerypath(player.x, player.y, player.xspeed, player.yspeed, cellWidth + cellWidth * coordinates[i][0])
+      PCollPoints.push( [ cellWidth + cellWidth * coordinates[i][0] , coly ] )
+
+      console.log(i)
+      distances = []
+      ds = []
+      for (let j = 0; j < 4; j++) {
+        console.log(PCollPoints[j] )
+        let k = PCollPoints[j]
+        console.log(j)
+
+        d = pythagorous( [player.x,player.y], [ k[0],k[1]] ) 
+        if (within([player.x,player.y], [player.x + player.xspeed, player.y + player.yspeed],k ) ) {
+          distances.push(d)
+          ds.push(d)
+        } else {
+          distances.push( Infinity )
+        }
+
+      }
+      collDirection = distances.indexOf( Math.min(...distances) )
+      collidesAt = PCollPoints[ collDirection ]
+ 
+      //console.log(distances)
+      player.x = collidesAt[0]
+      player.y = collidesAt[1]
+      //console.log(player)
+
+     	player.xspeed = collDirection >= 2 ? -player.xspeed : player.xspeed; 
+      //when the player collides with the y axis of a cell
+     	player.yspeed = collDirection < 2 ? -player.yspeed : player.yspeed;
+      //when the player collides with the x axis of the cell
+      PCollPoints = []
+      console.log('i =' + i)
+      console.log('x =' + x)
+     	if ( i === x) { //i = the number assigned to the cell that the player has touched, x is the number for the target cell 
            addGuard();
            document.querySelector('audio[class="door"]').play();
            score++;
-           do {
-            x = Math.floor(Math.random() * coordinates.length);
-           } while ( x === 15); 
-          
+           alert(1)
+           x = Math.floor(Math.random() * coordinates.length);        
      	}
-   } }
+    } 
+  }
   
 }
+
 var update = function () {
  if (score > highscore) {
    document.querySelectorAll('b')[2].innerHTML = "High score: " + highscore;
  }
  canv.lineWidth = 1;
  canv.clearRect(0,0,screenX,screenY);
-  for ( i = 0 ; i < guards.length; i++ ) {
+  for (let i = 0 ; i < guards.length; i++ ) {
      if ( player.x < guards[i].x + wh && player.x + wh > guards[i].x && player.y < wh + guards[i].y && player.y + wh > guards[i].y  )  {
      	gameOver();
-     } }
+     } 
+  }
  cell();
  drawCriminal();
  drawGuards();
  canv.strokeText("Score:" + score,0, cellHeight * 0.9);
  canv.stroke();
 }
+
 var paused = false;
 var pause = function() {
   if (paused === false && document.querySelector('#message').innerHTML !== 'Pause') {
@@ -329,7 +409,7 @@ var start = function () {
 }
 
 var gameOver = function () {
-   document.querySelector('audio[class="over"]').play();
+ document.querySelector('audio[class="over"]').play();
  clearInterval(interval);
  if (score > highscore) {
    highscore = score;
@@ -346,18 +426,15 @@ var gameOver = function () {
    document.querySelector('#message').innerHTML = 'Play again';
    var sizes = [];
    var x;
-   for (i = 0; i < document.querySelectorAll('#canvas *').length; i++) {
+   for (let i = 0; i < document.querySelectorAll('#canvas *').length; i++) {
      x = document.querySelectorAll('#canvas *')[i];
      sizes[i] = parseFloat(window.getComputedStyle(x).getPropertyValue('width'));
    }
-   for (i = 0; i < document.querySelectorAll('#canvas *').length; i++) {
+   for (let i = 0; i < document.querySelectorAll('#canvas *').length; i++) {
      document.querySelectorAll('#canvas *')[i].style.marginLeft = (screenX - sizes[i]) / 2 + 'px' ;
    }
    document.querySelectorAll('b')[2].innerHTML = "High score: " + highscore;
 }
-
-
-
 
 var newSpeed = function (e) { 
   var sign = function (variable) { 
@@ -367,6 +444,7 @@ var newSpeed = function (e) {
     }
   	return variable / Math.abs(variable)
   }
+
   var changeSpeed = function (coord, updown) { //updown is 1 for downwards and -1 for upwards
     if ( Math.abs( player[coord]) < 1e-10 ) { 
     //errors in the JS calculator give values of 2e-16 that should be zero
@@ -416,10 +494,9 @@ e.preventDefault();
 
 
   }
-  console.log('yspeed' + player.yspeed)
-  console.log('xspeed' + player.xspeed)
 }
 window.addEventListener("keydown", newSpeed , false);
+
 
 </script>
 </html>
